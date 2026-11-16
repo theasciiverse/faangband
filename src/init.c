@@ -376,10 +376,27 @@ void init_file_paths(const char *configpath, const char *libpath, const char *da
 #ifdef PRIVATE_USER_PATH
 
 	/* Build the path to the user specific directory */
-	if (strncmp(ANGBAND_SYS, "test", 4) == 0)
+	if (strncmp(ANGBAND_SYS, "test", 4) == 0) {
 		path_build(buf, sizeof(buf), PRIVATE_USER_PATH, "Test");
-	else
-		path_build(buf, sizeof(buf), PRIVATE_USER_PATH, VERSION_NAME);
+	} else {
+		/*
+		 * Asciiverse: the player's files (options, keymaps, saves,
+		 * scores, bones, character dumps, panic saves) live in the
+		 * state folder, $XDG_STATE_HOME/faangband, else
+		 * ~/.local/state/faangband, instead of ~/.angband/FAangband.
+		 */
+		const char *xdg = getenv("XDG_STATE_HOME");
+		const char *home = getenv("HOME");
+		char base[1024];
+
+		if (xdg && xdg[0] == '/')
+			my_strcpy(base, xdg, sizeof(base));
+		else if (home && home[0] == '/')
+			path_build(base, sizeof(base), home, ".local/state");
+		else
+			path_build(base, sizeof(base), "~", ".local/state");
+		path_build(buf, sizeof(buf), base, "faangband");
+	}
 	ANGBAND_DIR_USER = string_make(buf);
 
 #else /* !PRIVATE_USER_PATH */
