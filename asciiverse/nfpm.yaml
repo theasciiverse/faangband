@@ -1,0 +1,48 @@
+# System packages (.deb, .rpm, .apk, Arch) for FAangband, built by nfpm from
+# the same static Linux build as the av archive, after asciiverse/stage.sh.
+# The release workflow sets VERSION, RELEASE (our packaging release) and
+# ARCH (amd64 or arm64).
+#
+# No .desktop file on purpose: av is the one place titles are started from,
+# so Asciiverse packages never add menu entries (asciiverse/CLAUDE.md).
+#
+# The game reads its data from /usr/share/faangband and keeps each player's
+# files in their own $XDG_STATE_HOME/faangband; nothing is setgid and there is
+# no shared score file.
+name: faangband
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+release: ${RELEASE}
+section: games
+priority: optional
+maintainer: Asciiverse <packages@asciiverse.sh>
+vendor: Asciiverse
+homepage: https://github.com/theasciiverse/faangband
+license: GPL-2.0-only
+description: |
+  First Age Angband: Beleriand in the days of the War of the Jewels.
+  An Angband variant set in the First Age: start in one of many towns,
+  cross a wilderness map of Beleriand, and go down into Nargothrond,
+  Tol-in-Gaurhoth, Angband and other dungeons on the way to Morgoth.
+  Curses (terminal) build. By Nick McConnell, packaged by Asciiverse.
+contents:
+  - src: stage/faangband
+    dst: /usr/bin/faangband
+    file_info: { mode: 0755 }
+  - src: stage/lib/gamedata
+    dst: /usr/share/faangband/gamedata
+  - src: stage/lib/customize
+    dst: /usr/share/faangband/customize
+  - src: stage/lib/help
+    dst: /usr/share/faangband/help
+  - src: stage/lib/screens
+    dst: /usr/share/faangband/screens
+  - src: stage/lib/ghost
+    dst: /usr/share/faangband/ghost
+  - src: stage/copying.rst
+    dst: /usr/share/doc/faangband/copyright
+    file_info: { mode: 0644 }
+  - src: stage/GPL-2
+    dst: /usr/share/doc/faangband/GPL-2
+    file_info: { mode: 0644 }
