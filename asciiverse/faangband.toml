@@ -42,10 +42,10 @@ utf8 = true
 color = "basic"
 mouse = false
 
-# 100x30, asciiverse/record-preview.py: an Easterling Warrior called Ada
-# made at the birth screens, Eriador Town and its Alchemy Shop, then out
-# along the paths into the wilderness, fighting what she meets (best of
-# five takes)
+# 100x30, asciiverse/record-preview.py: a Beorning Warrior called Beorn
+# made at the birth screens, Gladden Fields Town, then out along the path
+# west into the Anduin Vale, where he becomes a bear cub and fights what
+# he meets (best of five takes)
 [media]
 cast = "asciiverse/faangband.cast"
 thumbnail_at = 40.0

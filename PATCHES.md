@@ -59,8 +59,9 @@ GPL-2.0-only, as our Angband is. `asciiverse/GPL-2` is the licence text
   version is upstream's build with dots (`2.0.1.1103`).
 - `asciiverse/README.md`: the README in each archive.
 - `asciiverse/record-preview.py` and `asciiverse/faangband.cast`: the
-  catalog preview, a scripted Easterling Warrior who starts in Eriador
-  Town and sets out into the wilderness (best of several takes).
+  catalog preview, a scripted Beorning Warrior who starts in Gladden
+  Fields Town and sets out into the Anduin Vale as a bear cub (best of
+  several takes).
 - `asciiverse/faangband.toml`, `asciiverse/faangband.md`: the catalog
   manifest and store page, as drafts for hub.
 - `.github/workflows/asciiverse-release.yml`: builds all of it on a

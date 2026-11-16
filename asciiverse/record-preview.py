@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Records asciiverse/faangband.cast, FAangband's catalog preview, at
-100x30 (hub/RECORDING.md). An Easterling Warrior called Ada is made at
-the birth screens in the standard wilderness, looks into the Alchemy
-Shop of Eriador Town, then sets out: she walks to the nearest unexplored
-edge, fights what is next to her, picks things up and takes the stairs
-or paths down she comes across. Several takes are made and the liveliest one
+100x30 (hub/RECORDING.md). A Beorning Warrior called Beorn is made at
+the birth screens in the standard wilderness, looks into a shop in
+Gladden Fields Town, then sets out along the path west into the Vale of
+Anduin, where he takes the shape of a bear cub: he walks to the nearest
+unexplored edge, fights what is next to him, picks things up and takes
+the paths and stairs down he comes across. Several takes are made and the liveliest one
 is kept.
 
 Usage, from the repo root after asciiverse/build.sh and
@@ -68,7 +69,7 @@ class Game:
             os.execvpe("asciinema", ["asciinema", "rec", "--overwrite", "-q",
                 "--idle-time-limit", "2", "--window-size", f"{COLS}x{ROWS}",
                 "--capture-env", "TERM,COLORTERM,LANG", "--title", "FAangband",
-                "--command", "faangband -uAda", CAST], env)
+                "--command", "faangband -uBeorn", CAST], env)
         fcntl.ioctl(self.fd, termios.TIOCSWINSZ, struct.pack("HHHH", ROWS, COLS, 0, 0))
         self.start = time.time()
 
@@ -163,9 +164,10 @@ def take(stage):
     g.wait_for("Press any key", 8)
     g.pump(1.2)
     g.key("\r", 1.0)
-    # birth: the standard wilderness, Easterling, Warrior, point-based
-    # stats, the name from -u, accept
-    for k, wait in (("a", 0.8), ("a", 0.6), ("a", 0.6), ("a", 0.8), ("\r", 0.8)):
+    # birth: the standard wilderness, Beorning (q moves the cursor there),
+    # Warrior, point-based stats, the name from -u, accept
+    for k, wait in (("a", 0.8), ("q", 0.6), ("\r", 0.6), ("a", 0.6), ("a", 0.8),
+                    ("\r", 0.8)):
         g.key(k, wait)
     end = time.time() + 10
     while time.time() < end and "Town" not in g.screen.display[ROWS - 1]:
@@ -193,7 +195,7 @@ def take(stage):
         if "[y/n]" in t or "(y/n)" in t:
             g.key("n", 0.2)
             continue
-        if phase == "store" and ("Purchase" in t or "Alchemy" in t or "(Store" in t):
+        if phase == "store" and "Store Inventory" in t:
             g.pump(2.0)
             g.key("\x1b", 0.6)
             phase = "stairs"
@@ -213,14 +215,26 @@ def take(stage):
             if 0 <= y < len(grid) and 0 <= x < len(grid[0]) and is_monster(grid[y][x]):
                 target = (dx, dy)
                 break
-        if target:
+        # in town only what blocks the way is fought (below); out in the
+        # wild everything next to him is
+        if target and depth > 0:
             g.key(DIRS[target], 0.25)
             continue
+        if phase == "store" and g.elapsed() > 16:
+            phase = "stairs"
 
         if on_down and phase != "store" and \
                 (phase == "stairs" or g.elapsed() > 22 + 12 * depth):
             g.key(">", 1.2)
             on_down = False
+            if depth == 0:
+                # out in the wild: Beorn takes the shape of a bear cub
+                g.pump(1.0)
+                if "-more-" in g.screen.display[0]:
+                    g.key("\x1b", 0.3)
+                g.key("!", 0.8)
+                if "[y/n]" in g.screen.display[0]:
+                    g.key("y", 1.5)
             depth += 1
             phase = "dungeon"
             visited.clear()
@@ -236,7 +250,7 @@ def take(stage):
         def want(c):
             ch = grid[c[1]][c[0]]
             if phase == "store":
-                return ch == "5"
+                return ch in "1234567"
             if phase == "stairs":
                 return ch == ">"
             if ch in ITEMS:
@@ -256,13 +270,6 @@ def take(stage):
             step = random.choice(list(DIRS))
             stuck = 0
         nx, ny = me[0] + step[0], me[1] + step[1]
-        if grid[ny][nx] in DOORS:
-            g.key("o", 0.1)        # open it; with one door near, no direction is asked
-            if "Direction" in g.screen.display[0]:
-                g.key(DIRS[step], 0.3)
-            else:
-                g.pump(0.2)
-            continue
         on_down = grid[ny][nx] == ">"
         g.key(DIRS[step], 0.15 if phase != "dungeon" else 0.12)
         now = g.grid()
