@@ -57,7 +57,8 @@ jobs:
       - name: Smoke test
         run: |
           # the program must find lib/ beside itself and start a game
-          (cd /tmp && script -qec "TERM=xterm LANG=C.UTF-8 HOME=/tmp/h timeout 5 $PWD/stage/faangband" /dev/null </dev/null || true) >smoke.log
+          here=$PWD  # before the cd: inside it $PWD is /tmp
+          (cd /tmp && script -qec "TERM=xterm LANG=C.UTF-8 HOME=/tmp/h timeout 5 $here/stage/faangband" /dev/null </dev/null || true) >smoke.log
           grep -aq "Initialization" smoke.log || { tail -c 2000 smoke.log; exit 1; }
           ls /tmp/h/.local/state/faangband
 
