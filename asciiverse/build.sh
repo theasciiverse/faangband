@@ -10,6 +10,9 @@
 # archive), else from /usr/share/faangband (system packages), and keeps
 # the player's files in $XDG_STATE_HOME/faangband (PATCHES.md).
 set -eu
+# configure's ncurses check runs a program that starts curses, which needs
+# a terminal type; CI and containers have none, and the check then fails
+export TERM="${TERM:-xterm}"
 # the upstream build this branch carries (its weekly pre-release tag)
 UPSTREAM_VERSION=2.0.1-1103-gc4ee2ce24
 if [ -f /etc/alpine-release ]; then
